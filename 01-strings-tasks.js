@@ -173,8 +173,8 @@ function convertToUpperCase(str) {
  *   ],
  *   'info@gmail.com' => ['info@gmail.com']
  */
-function extractEmails(/* str */) {
-  throw new Error('Not implemented');
+function extractEmails(str) {
+  return str.split(';');
 }
 
 /**
@@ -200,8 +200,15 @@ function extractEmails(/* str */) {
  *             '└──────────┘\n'
  *
  */
-function getRectangleString(/* width, height */) {
-  throw new Error('Not implemented');
+function getRectangleString(width, height) {
+  const top = `┌${'─'.repeat(width - 2)}┐\n`;
+  const middle = Array.from(
+    { length: height - 2 },
+    () => `│${' '.repeat(width - 2)}│\n`
+  ).join('');
+  const bottom = `└${'─'.repeat(width - 2)}┘\n`;
+
+  return top + middle + bottom;
 }
 
 /**
@@ -220,8 +227,16 @@ function getRectangleString(/* width, height */) {
  *    => 'NOPQRSTUVWXYZABCDEFGHIJKLMnopqrstuvwxyzabcdefghijklm'
  *
  */
-function encodeToRot13(/* str */) {
-  throw new Error('Not implemented');
+function encodeToRot13(str) {
+  return str.replace(/[A-Za-z]/g, (char) => {
+    return String.fromCharCode(
+      ((char.charCodeAt(0) -
+        (char <= 'Z' ? 'A'.charCodeAt(0) : 'a'.charCodeAt(0)) +
+        13) %
+        26) +
+        (char <= 'Z' ? 'A'.charCodeAt(0) : 'a'.charCodeAt(0))
+    );
+  });
 }
 
 /**
@@ -237,13 +252,8 @@ function encodeToRot13(/* str */) {
  *   isString('test') => true
  *   isString(new String('test')) => true
  */
-function isString(/* valuer */) {
-  // if (typeof value === 'string') {
-  //   const Answer = true;
-  // } else {
-  //   const Answer = false;
-  // }
-  throw new Error('Not implemented');
+function isString(value) {
+  return typeof value === 'string' || value instanceof String;
 }
 
 /**
@@ -270,8 +280,11 @@ function isString(/* valuer */) {
  *   'Q♠' => 50
  *   'K♠' => 51
  */
-function getCardId(/* value */) {
-  throw new Error('Not implemented');
+function getCardId(value) {
+  return (
+    '♣♦♥♠'.indexOf(value.slice(-1)) * 13 +
+    'A234567891JQK'.indexOf(value.slice(0, value.length - 1).replace('10', '1'))
+  );
 }
 
 module.exports = {
