@@ -167,8 +167,11 @@ function doRectanglesOverlap(rect1, rect2) {
  *   { center: { x:0, y:0 }, radius:10 },  { x:10, y:10 }   => false
  *
  */
-function isInsideCircle(/* circle, point */) {
-  throw new Error('Not implemented');
+function isInsideCircle(circle, point) {
+  const dx = point.x - circle.center.x;
+  const dy = point.y - circle.center.y;
+  const distanceSquared = dx * dx + dy * dy;
+  return distanceSquared < circle.radius * circle.radius;
 }
 
 /**
@@ -218,8 +221,29 @@ function findFirstSingleChar(str) {
  *   5, 3, true, true   => '[3, 5]'
  *
  */
-function getIntervalString(/* a, b, isStartIncluded, isEndIncluded */) {
-  throw new Error('Not implemented');
+function getIntervalString(a, b, isStartIncluded, isEndIncluded) {
+  let smallNum = 0;
+  let bigNum = 0;
+  let firstScob = '';
+  let secondScob = '';
+  if (a < b) {
+    smallNum = a;
+    bigNum = b;
+  } else {
+    smallNum = b;
+    bigNum = a;
+  }
+  if (isStartIncluded === false) {
+    firstScob = '(';
+  } else {
+    firstScob = '[';
+  }
+  if (isEndIncluded === false) {
+    secondScob = ')';
+  } else {
+    secondScob = ']';
+  }
+  return `${firstScob}${smallNum}, ${bigNum}${secondScob}`;
 }
 
 /**
@@ -234,8 +258,12 @@ function getIntervalString(/* a, b, isStartIncluded, isEndIncluded */) {
  * 'rotator' => 'rotator'
  * 'noon' => 'noon'
  */
-function reverseString(/* str */) {
-  throw new Error('Not implemented');
+function reverseString(str) {
+  let newStr = '';
+  for (let i = str.length - 1; i >= 0; i -= 1) {
+    newStr += `${str[i]}`;
+  }
+  return newStr;
 }
 
 /**
@@ -250,8 +278,13 @@ function reverseString(/* str */) {
  *   87354 => 45378
  *   34143 => 34143
  */
-function reverseInteger(/* num */) {
-  throw new Error('Not implemented');
+function reverseInteger(num) {
+  const str = String(num);
+  let newStr = '';
+  for (let i = str.length - 1; i >= 0; i -= 1) {
+    newStr += `${str[i]}`;
+  }
+  return Number(newStr);
 }
 
 /**
@@ -274,8 +307,19 @@ function reverseInteger(/* num */) {
  *   5436468789016589 => false
  *   4916123456789012 => false
  */
-function isCreditCardNumber(/* ccn */) {
-  throw new Error('Not implemented');
+function isCreditCardNumber(cnn) {
+  const digits = String(cnn).split('').map(Number);
+  const { length } = digits;
+  let sum = 0;
+  for (let i = 0; i < length; i += 1) {
+    let digit = digits[i];
+    if ((length - i) % 2 === 0) {
+      digit *= 2;
+      if (digit > 9) digit -= 9;
+    }
+    sum += digit;
+  }
+  return sum % 10 === 0;
 }
 
 /**
@@ -292,8 +336,17 @@ function isCreditCardNumber(/* ccn */) {
  *   10000 ( 1+0+0+0+0 = 1 ) => 1
  *   165536 (1+6+5+5+3+6 = 26,  2+6 = 8) => 8
  */
-function getDigitalRoot(/* num */) {
-  throw new Error('Not implemented');
+function getDigitalRoot(num) {
+  let count = num;
+  while (count >= 10) {
+    let countNum = 0;
+    const str = String(count);
+    for (let i = 0; i < str.length; i += 1) {
+      countNum += Number(str[i]);
+    }
+    count = countNum;
+  }
+  return count;
 }
 
 /**
@@ -317,8 +370,28 @@ function getDigitalRoot(/* num */) {
  *   '{)' = false
  *   '{[(<{[]}>)]}' = true
  */
-function isBracketsBalanced(/* str */) {
-  throw new Error('Not implemented');
+function isBracketsBalanced(str) {
+  const brackets = {
+    ']': '[',
+    ')': '(',
+    '}': '{',
+    '>': '<',
+  };
+  const opening = Object.values(brackets);
+  const closing = Object.keys(brackets);
+  const stack = str.split('').reduce((acc, char) => {
+    if (opening.includes(char)) {
+      return [...acc, char];
+    }
+    if (closing.includes(char)) {
+      if (acc[acc.length - 1] === brackets[char]) {
+        return acc.slice(0, -1);
+      }
+      acc.push('INVALID'); // помечаем ошибку
+    }
+    return acc;
+  }, []);
+  return !stack.includes('INVALID') && stack.length === 0;
 }
 
 /**
@@ -341,8 +414,8 @@ function isBracketsBalanced(/* str */) {
  *    365, 4  => '11231'
  *    365, 10 => '365'
  */
-function toNaryString(/* num, n */) {
-  throw new Error('Not implemented');
+function toNaryString(num, n) {
+  return num.toString(n);
 }
 
 /**
@@ -357,8 +430,20 @@ function toNaryString(/* num, n */) {
  *   ['/web/assets/style.css', '/.bin/mocha',  '/read.me'] => '/'
  *   ['/web/favicon.ico', '/web-scripts/dump', '/verbalizer/logs'] => '/'
  */
-function getCommonDirectoryPath(/* pathes */) {
-  throw new Error('Not implemented');
+function getCommonDirectoryPath(pathes) {
+  if (pathes.length === 0) return '';
+  const splitPaths = pathes.map((path) => path.split('/'));
+  const minLength = Math.min(...splitPaths.map((parts) => parts.length));
+  const commonParts = [];
+  for (let i = 0; i < minLength; i += 1) {
+    const segment = splitPaths[0][i];
+    if (splitPaths.every((parts) => parts[i] === segment)) {
+      commonParts.push(segment);
+    } else {
+      break;
+    }
+  }
+  return commonParts.length > 0 ? `${commonParts.join('/')}/` : '';
 }
 
 /**
@@ -379,8 +464,14 @@ function getCommonDirectoryPath(/* pathes */) {
  *                         [ 6 ]]
  *
  */
-function getMatrixProduct(/* m1, m2 */) {
-  throw new Error('Not implemented');
+function getMatrixProduct(m1, m2) {
+  const rowsA = m1.length;
+  const colsB = m2[0].length;
+  return Array.from({ length: rowsA }, (_, i) =>
+    Array.from({ length: colsB }, (__, j) =>
+      m1[i].reduce((sum, val, k) => sum + val * m2[k][j], 0)
+    )
+  );
 }
 
 /**
@@ -413,8 +504,21 @@ function getMatrixProduct(/* m1, m2 */) {
  *    [    ,   ,    ]]
  *
  */
-function evaluateTicTacToePosition(/* position */) {
-  throw new Error('Not implemented');
+function evaluateTicTacToePosition(position) {
+  const lines = [
+    // горизонтали
+    [position[0][0], position[0][1], position[0][2]],
+    [position[1][0], position[1][1], position[1][2]],
+    [position[2][0], position[2][1], position[2][2]],
+    // вертикали
+    [position[0][0], position[1][0], position[2][0]],
+    [position[0][1], position[1][1], position[2][1]],
+    [position[0][2], position[1][2], position[2][2]],
+    // диагонали
+    [position[0][0], position[1][1], position[2][2]],
+    [position[0][2], position[1][1], position[2][0]],
+  ];
+  return lines.find(([a, b, c]) => a && a === b && b === c)?.[0];
 }
 
 module.exports = {
